@@ -3,7 +3,31 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - lion1
+  - lion2
+  - lion3
+  - lion4
+  - lion5
+  - lion6
+  - lion7
+  - lion8
+  - lion9
+  - lion10
+  - lion11
+  - lion12
+  - snake1
+  - snake2
+  - snake3
+  - snake4
+  - snake5
+  - snake6
+  - snake7
+  - snake8
+  - snake9
+  - snake10
+  - snake11
+  - snake12
   layers:
   - Default
   - TransparentFX
