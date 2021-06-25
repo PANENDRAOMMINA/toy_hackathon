@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class dice : MonoBehaviour
 {
+
     public Sprite[] diceslot;
     private Image i;
     public int f;
@@ -24,6 +25,7 @@ public class dice : MonoBehaviour
         f = Random.Range(0, 4);
         i.sprite = diceslot[f];
     }
+
     public void rolldice()
     {
         number.instance.dice_number1 = f;

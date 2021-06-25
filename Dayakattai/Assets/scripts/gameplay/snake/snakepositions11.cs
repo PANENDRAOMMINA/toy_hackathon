@@ -15,6 +15,9 @@ public class snakepositions11 : MonoBehaviour
     public bool snakeplayerstatus, undestructable,canmove;
     public int i = 0,boxcount=0,previousnumber=0;
 
+    [SerializeField]
+    private button_creation creation;
+
     private void Awake()
     {
         deafultposition = transform.position;
@@ -39,15 +42,59 @@ public class snakepositions11 : MonoBehaviour
     }
     public void Move(Button button)
     {
-        selectednumber = number.instance.global_number;
-        StartCoroutine(move(selectednumber, button));
+        if (!FindObjectOfType<number>().squaremoveenabled)
+        {
+            for (int i = 0; i < creation.buttons.Count; i++)
+            {
+                if (FindObjectOfType<button_creation>().buttons[i].isselected)
+                {
+                    selectednumber = FindObjectOfType<button_creation>().buttons[i].GetComponent<_Button>().express;
+                    StartCoroutine(move(selectednumber, button));
+                }
+            }
+
+
+            for (int i = 0; i < creation.buttons.Count; i++)
+            {
+                if (FindObjectOfType<button_creation>().buttons[i].isselected)
+                {
+                    _Button c = FindObjectOfType<button_creation>().buttons[i];
+                    FindObjectOfType<button_creation>().buttons.Remove(c);
+                    c.Destroy();
+                }
+            }
+            check_Button_Number();
+        }
     }
+    private static void check_Button_Number()
+    {
+        if (FindObjectOfType<button_creation>().buttons.Count == 0)
+        {
+            if (number.instance.Snakes_Lifeline)
+            {
+                number.instance.squaremoveenabled = false;
+                number.instance.squareoncharge = false;
+                number.instance.firstplayermove = true;
+                number.instance.Deactivate_Lifeline();
+            }
+            else
+            {
+                number.instance.squareoncharge = true;
+                number.instance.firstplayermove = false;
+                number.instance.squaremoveenabled = true;
+             
+            }
+            number.instance.moving = false;
+            FindObjectOfType<button_creation>().Reset_positions();
+        }
+    }
+
     IEnumerator move(int steps, Button b)
     {
         entrysafezone = steps + i;
         if (!snakeplayerstatus)
         {
-            if (!GameManager.instance.powerup5forcircle)
+            if (!GameManager.instance.powerup5forcircle[number.instance.team_number_for_vipers])
             {
                 if (steps == 1)
                 {
@@ -56,7 +103,7 @@ public class snakepositions11 : MonoBehaviour
                   //  positionsscript.instance.snakepieceposition(i);
                     i++;
                     snakeplayerstatus = true;
-                    GameManager.instance.powerup5forcircle = true;
+                    GameManager.instance.powerup5forcircle[number.instance.team_number_for_vipers] = true;
                 }
             }
             else
@@ -207,22 +254,12 @@ public class snakepositions11 : MonoBehaviour
 
 
         }
-
-
-        if (steps == 1 || steps == 5 || steps == 6 || steps == 12)
-        {
-            number.instance.moving = false;
+            
             number.instance.squareoncharge = false;
             number.instance.firstplayermove = true;
-            number.instance.squaremoveenabled = true;
-        }
-        else
-        {
-            number.instance.moving = false;
-            number.instance.squareoncharge = false;
-            number.instance.firstplayermove = false;
-            number.instance.squaremoveenabled = true;
-        }
+            number.instance.squaremoveenabled = false;
+        
+       
         if (snakeplayerstatus)
         {
             checktackle(i);
@@ -230,6 +267,7 @@ public class snakepositions11 : MonoBehaviour
         p = 0;
         entrysafezone = 0;
         canmove = false;
+        check_Button_Number();
 
     }
     public void checktackle(int i)
@@ -244,7 +282,8 @@ public class snakepositions11 : MonoBehaviour
                     box[0].GetComponent<lionposition1>().i = 0;
                     GameManager.instance.lionbutton[0].transform.position = lionposition1.instance.defaultposition;
                     lionposition1.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionposition1.instance.boxcount = 0;
                 }
                 if (i == lionposition2.instance.i && !lionposition2.instance.undestructable)
@@ -253,7 +292,8 @@ public class snakepositions11 : MonoBehaviour
                     box[1].GetComponent<lionposition2>().i = 0;
                     GameManager.instance.lionbutton[1].transform.position = lionposition2.instance.defaultposition;
                     lionposition2.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionposition2.instance.boxcount = 0;
                 }
                 if (i == lionpositions3.instance.i && !lionpositions3.instance.undestructable)
@@ -262,7 +302,8 @@ public class snakepositions11 : MonoBehaviour
                     box[2].GetComponent<lionpositions3>().i = 0;
                     GameManager.instance.lionbutton[2].transform.position = lionpositions3.instance.defaultposition;
                     lionpositions3.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions3.instance.boxcount = 0;
                 }
                 if (i == lionpositions4.instance.i && !lionpositions4.instance.undestructable)
@@ -271,7 +312,8 @@ public class snakepositions11 : MonoBehaviour
                     box[3].GetComponent<lionpositions4>().i = 0;
                     GameManager.instance.lionbutton[3].transform.position = lionpositions4.instance.defaultposition;
                     lionpositions4.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions4.instance.boxcount = 0;
                 }
                 if (i == lionpositions5.instance.i && !lionpositions5.instance.undestructable)
@@ -280,7 +322,8 @@ public class snakepositions11 : MonoBehaviour
                     box[4].GetComponent<lionpositions5>().i = 0;
                     GameManager.instance.lionbutton[3].transform.position = lionpositions5.instance.defaultposition;
                     lionpositions5.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions5.instance.boxcount = 0;
                 }
 
@@ -290,7 +333,8 @@ public class snakepositions11 : MonoBehaviour
                     box[5].GetComponent<lionpositions6>().i = 0;
                     GameManager.instance.lionbutton[6].transform.position = lionpositions6.instance.defaultposition;
                     lionpositions6.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions6.instance.boxcount = 0;
                 }
                 if (i == lionpositions7.instance.i && !lionpositions7.instance.undestructable)
@@ -299,7 +343,8 @@ public class snakepositions11 : MonoBehaviour
                     box[6].GetComponent<lionpositions7>().i = 0;
                     GameManager.instance.lionbutton[7].transform.position = lionpositions7.instance.defaultposition;
                     lionpositions7.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions7.instance.boxcount = 0;
                 }
                 if (i == lionpositions8.instance.i && !lionpositions8.instance.undestructable)
@@ -308,7 +353,8 @@ public class snakepositions11 : MonoBehaviour
                     box[7].GetComponent<lionpositions8>().i = 0;
                     GameManager.instance.lionbutton[7].transform.position = lionpositions8.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions8.instance.boxcount = 0;
                 }
                 if (i == lionpositions9.instance.i && !lionpositions9.instance.undestructable)
@@ -317,7 +363,8 @@ public class snakepositions11 : MonoBehaviour
                     box[8].GetComponent<lionpositions9>().i = 0;
                     GameManager.instance.lionbutton[8].transform.position = lionpositions9.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions9.instance.boxcount = 0;
                 }
                 if (i == lionpositions10.instance.i && !lionpositions10.instance.undestructable)
@@ -326,7 +373,8 @@ public class snakepositions11 : MonoBehaviour
                     box[9].GetComponent<lionpositions10>().i = 0;
                     GameManager.instance.lionbutton[9].transform.position = lionpositions10.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions10.instance.boxcount = 0;
                 }
                 if (i == lionpositions11.instance.i && !lionpositions11.instance.undestructable)
@@ -335,7 +383,8 @@ public class snakepositions11 : MonoBehaviour
                     box[10].GetComponent<lionpositions11>().i = 0;
                     GameManager.instance.lionbutton[10].transform.position = lionpositions11.instance.defaultposition;
                     lionpositions11.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions11.instance.boxcount = 0;
                 }
                 if (i == lionpositions12.instance.i && !lionpositions12.instance.undestructable)
@@ -344,7 +393,8 @@ public class snakepositions11 : MonoBehaviour
                     box[11].GetComponent<lionpositions12>().i = 0;
                     GameManager.instance.lionbutton[11].transform.position = lionpositions12.instance.defaultposition;
                     lionpositions12.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions12.instance.boxcount = 0;
                 }
             }
@@ -356,7 +406,8 @@ public class snakepositions11 : MonoBehaviour
                     box[0].GetComponent<lionposition1>().i = 0;
                     GameManager.instance.lionbutton[0].transform.position = lionposition1.instance.defaultposition;
                     lionposition1.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionposition1.instance.boxcount = 0;
                 }
                 if (boxcount + lionposition2.instance.boxcount == 48 && !lionposition2.instance.undestructable)
@@ -365,7 +416,8 @@ public class snakepositions11 : MonoBehaviour
                     box[1].GetComponent<lionposition2>().i = 0;
                     GameManager.instance.lionbutton[1].transform.position = lionposition2.instance.defaultposition;
                     lionposition2.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionposition2.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions3.instance.boxcount == 48 && !lionpositions3.instance.undestructable)
@@ -374,7 +426,8 @@ public class snakepositions11 : MonoBehaviour
                     box[2].GetComponent<lionpositions3>().i = 0;
                     GameManager.instance.lionbutton[2].transform.position = lionpositions3.instance.defaultposition;
                     lionpositions3.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions3.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions4.instance.boxcount == 48 && !lionpositions4.instance.undestructable)
@@ -383,7 +436,8 @@ public class snakepositions11 : MonoBehaviour
                     box[3].GetComponent<lionpositions4>().i = 0;
                     GameManager.instance.lionbutton[3].transform.position = lionpositions4.instance.defaultposition;
                     lionpositions4.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions4.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions5.instance.boxcount == 48 && !lionpositions5.instance.undestructable)
@@ -392,7 +446,8 @@ public class snakepositions11 : MonoBehaviour
                     box[4].GetComponent<lionpositions5>().i = 0;
                     GameManager.instance.lionbutton[3].transform.position = lionpositions5.instance.defaultposition;
                     lionpositions5.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions5.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions6.instance.boxcount == 48 && !lionpositions6.instance.undestructable)
@@ -401,7 +456,8 @@ public class snakepositions11 : MonoBehaviour
                     box[5].GetComponent<lionpositions6>().i = 0;
                     GameManager.instance.lionbutton[6].transform.position = lionpositions6.instance.defaultposition;
                     lionpositions6.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions6.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions7.instance.boxcount == 48 && !lionpositions7.instance.undestructable)
@@ -410,7 +466,8 @@ public class snakepositions11 : MonoBehaviour
                     box[6].GetComponent<lionpositions7>().i = 0;
                     GameManager.instance.lionbutton[7].transform.position = lionpositions7.instance.defaultposition;
                     lionpositions7.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions7.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions8.instance.boxcount == 48 && !lionpositions8.instance.undestructable)
@@ -419,7 +476,8 @@ public class snakepositions11 : MonoBehaviour
                     box[7].GetComponent<lionpositions8>().i = 0;
                     GameManager.instance.lionbutton[7].transform.position = lionpositions8.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions8.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions9.instance.boxcount == 48 && !lionpositions9.instance.undestructable)
@@ -428,7 +486,8 @@ public class snakepositions11 : MonoBehaviour
                     box[8].GetComponent<lionpositions9>().i = 0;
                     GameManager.instance.lionbutton[8].transform.position = lionpositions9.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions9.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions10.instance.boxcount == 48 && !lionpositions10.instance.undestructable)
@@ -437,7 +496,8 @@ public class snakepositions11 : MonoBehaviour
                     box[9].GetComponent<lionpositions10>().i = 0;
                     GameManager.instance.lionbutton[9].transform.position = lionpositions10.instance.defaultposition;
                     lionpositions8.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions10.instance.boxcount = 0;
                 }
                 if (boxcount + lionpositions11.instance.boxcount == 48 && !lionpositions11.instance.undestructable)
@@ -446,24 +506,23 @@ public class snakepositions11 : MonoBehaviour
                     box[10].GetComponent<lionpositions11>().i = 0;
                     GameManager.instance.lionbutton[10].transform.position = lionpositions11.instance.defaultposition;
                     lionpositions11.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions11.instance.boxcount = 0;
                 }
-                if (boxcount + lionpositions12.instance.boxcount == 48 && !lionpositions12.instance.undestructable)
+                if (boxcount + lionpositions11.instance.boxcount == 48 && !lionpositions12.instance.undestructable)
                 {
                     box[11].transform.position = lionpositions12.instance.defaultposition;
                     box[11].GetComponent<lionpositions12>().i = 0;
                     GameManager.instance.lionbutton[11].transform.position = lionpositions12.instance.defaultposition;
                     lionpositions12.instance.playerboolmove = false;
-                    number.instance.firstplayermove = true;
+                    number.instance.Snakes_Lifeline = true;
+                    number.instance.Activate_Lifeline();
                     lionpositions12.instance.boxcount = 0;
                 }
 
             }
         }
-
-
-
     }
 
 

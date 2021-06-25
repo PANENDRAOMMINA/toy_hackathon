@@ -7,15 +7,20 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
     public Button[] snakebutton;
     public Button[] lionbutton;
-    public bool powerup5forsquare, powerup5forcircle;
+    public bool[] powerup5forsquare;
+    public bool[] powerup5forcircle;
     public GameObject holder;
      private void Awake()
     {
-        
-        powerup5forcircle = false;
-        powerup5forsquare = false;
+        powerup5forsquare = new bool[PlayerPrefs.GetInt("Team_Size")];
+        powerup5forcircle = new bool[PlayerPrefs.GetInt("Team_Size")];
+        for(int i=0;i<powerup5forcircle.Length;i++)
+               powerup5forcircle[i] = false;
+        for(int i=0;i<powerup5forcircle.Length;i++)
+               powerup5forsquare[i] = false;
         if(instance==null)
         {
             instance = this;
@@ -27,6 +32,7 @@ public class GameManager : MonoBehaviour
     }
     public void letmovesquare()
     {
+      
         if (number.instance.squaremoveenabled && !number.instance.firstplayermove)
         {
             lionposition1.instance.Move(lionbutton[0]);
@@ -111,6 +117,7 @@ public class GameManager : MonoBehaviour
     }
     public void  letmovecircle()
     {
+        
         if (!number.instance.squaremoveenabled&& number.instance.firstplayermove)
         {
             snakepositions1.instance.Move(snakebutton[0]);
@@ -118,6 +125,7 @@ public class GameManager : MonoBehaviour
     }
     public void letmovecircle2()
     {
+        
         if (!number.instance.squaremoveenabled&& number.instance.firstplayermove)
         {
             snakepositions2.instance.Move(snakebutton[1]);
@@ -126,6 +134,7 @@ public class GameManager : MonoBehaviour
     }
     public void letmovecircle3()
     {
+
         if (!number.instance.squaremoveenabled && number.instance.firstplayermove)
         {
             snakepositions3.instance.Move(snakebutton[2]);

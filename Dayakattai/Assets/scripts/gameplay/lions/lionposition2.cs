@@ -12,6 +12,11 @@ public class lionposition2 : MonoBehaviour
     public int i = 0, entrytosafezone = 0,boxcount=0,prevoiusposition;
     public bool playerboolmove, undestructable,canmove;
     public Vector2 defaultposition;
+    public bool number_is_selected;
+
+    [SerializeField]
+    private button_creation creation;
+
     private void Awake()
     {
         canmove = false;
@@ -33,10 +38,63 @@ public class lionposition2 : MonoBehaviour
             circle[j] = lionposition1.instance.circle[j];
         }
     }
+
+    private void Update()
+    {
+        
+    }
+
+
     public void Move(Button button)
     {
-        selectednumber = number.instance.global_number;
-        StartCoroutine(move(selectednumber, button));
+        
+        if (FindObjectOfType<number>().squaremoveenabled)
+        {
+            for (int i = 0; i < creation.buttons.Count; i++)
+            {
+                if (FindObjectOfType<button_creation>().buttons[i].isselected)
+                {
+                    selectednumber = FindObjectOfType<button_creation>().buttons[i].GetComponent<_Button>().express;
+                    StartCoroutine(move(selectednumber, button));
+                }
+            }
+
+            for (int i = 0; i < creation.buttons.Count; i++)
+            {
+                if (FindObjectOfType<button_creation>().buttons[i].isselected)
+                {
+                    _Button c = FindObjectOfType<button_creation>().buttons[i];
+                    FindObjectOfType<button_creation>().buttons.Remove(c);
+                    c.Destroy();
+                }
+            }
+
+            check_Button_Number();
+        }
+    }
+    private  void check_Button_Number()
+    {
+        if (FindObjectOfType<button_creation>().buttons.Count == 0)
+        {
+            if (number.instance.Lions_Lifeline)
+            {
+                number.instance.squaremoveenabled = true;
+                number.instance.squareoncharge = true;
+                number.instance.firstplayermove = false;
+                number.instance.Deactivate_Lifeline();
+            }
+            else
+            {
+                number.instance.squareoncharge = false;
+                number.instance.firstplayermove = true;
+                number.instance.squaremoveenabled = false;
+             
+            }
+
+
+            number.instance.moving = false;
+            FindObjectOfType<button_creation>().Reset_positions();
+        }
     }
     IEnumerator move(int steps, Button b)
     {
@@ -44,7 +102,7 @@ public class lionposition2 : MonoBehaviour
         entrytosafezone = steps + i;
         if (!playerboolmove)
         {
-            if (!GameManager.instance.powerup5forsquare)
+            if (!GameManager.instance.powerup5forsquare[number.instance.team_number_for_lions])
             {
                 if (steps == 1)
                 {
@@ -53,7 +111,7 @@ public class lionposition2 : MonoBehaviour
                   //  positionsscript.instance.lionpiecetoposition(i);
                     i++;
                     playerboolmove = true;
-                    GameManager.instance.powerup5forsquare = true;
+                    GameManager.instance.powerup5forsquare[number.instance.team_number_for_lions] = true;
                 }
             }
             else
@@ -203,261 +261,276 @@ public class lionposition2 : MonoBehaviour
 
         }
 
-        if (steps == 1 || steps == 5 || steps == 6 || steps == 12)
-        {
-            number.instance.moving = false;
-            number.instance.squareoncharge = true;
-            number.instance.firstplayermove = false;
-            number.instance.squaremoveenabled = false;
-         }
-        else
-        {
-            number.instance.moving = false;
-            number.instance.squareoncharge = true;
-            number.instance.firstplayermove = true;
-            number.instance.squaremoveenabled = false;
-
-        }
+          
+        number.instance.squareoncharge = true;
+        number.instance.firstplayermove = false;
+        number.instance.squaremoveenabled = true;
+        
         if (playerboolmove)
         {
             checktackle(i);
         }
         p = 0;
         canmove = false;
+        check_Button_Number();
     }
-  
-        public void checktackle(int i)
+
+    public void checktackle(int i)
+    {
+        if (number.instance.squareoncharge)
         {
-            if (number.instance.squareoncharge)
+            if ((i > 6 && i <= 13) || i > 60)
             {
-                if ((i > 6 && i <= 13) || i > 60)
+                if (i == snakepositions1.instance.i && !snakepositions1.instance.undestructable)
                 {
-                    if (i == snakepositions1.instance.i && !snakepositions1.instance.undestructable)
-                    {
-                        circle[0].transform.position = snakepositions1.instance.deafultposition;
-                        circle[0].GetComponent<snakepositions1>().i = 0;
-                        GameManager.instance.snakebutton[0].transform.position = snakepositions1.instance.deafultposition;
-                        snakepositions1.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions1.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions2.instance.i && !snakepositions2.instance.undestructable)
-                    {
-                        circle[1].transform.position = snakepositions2.instance.defaultposition;
-                        circle[1].GetComponent<snakepositions2>().i = 0;
-                        GameManager.instance.snakebutton[1].transform.position = snakepositions2.instance.defaultposition;
-                        snakepositions2.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions2.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions3.instance.i && !snakepositions3.instance.undestructable)
-                    {
-                        circle[2].transform.position = snakepositions3.instance.deafultposition;
-                        circle[2].GetComponent<snakepositions3>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions3.instance.deafultposition;
-                        snakepositions4.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions3.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions4.instance.i && !snakepositions4.instance.undestructable)
-                    {
-                        circle[3].transform.position = snakepositions4.instance.deafultposition;
-                        circle[3].GetComponent<snakepositions4>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions4.instance.deafultposition;
-                        snakepositions4.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions4.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions5.instance.i && !snakepositions5.instance.undestructable)
-                    {
-                        circle[4].transform.position = snakepositions5.instance.deafultposition;
-                        circle[4].GetComponent<snakepositions5>().i = 0;
-                        GameManager.instance.snakebutton[4].transform.position = snakepositions5.instance.deafultposition;
-                        snakepositions5.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions5.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions6.instance.i && !snakepositions6.instance.undestructable)
-                    {
-                        circle[5].transform.position = snakepositions6.instance.deafultposition;
-                        circle[5].GetComponent<snakepositions6>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions6.instance.deafultposition;
-                        snakepositions6.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions6.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions7.instance.i && !snakepositions7.instance.undestructable)
-                    {
-                        circle[6].transform.position = snakepositions7.instance.deafultposition;
-                        circle[6].GetComponent<snakepositions7>().i = 0;
-                        GameManager.instance.snakebutton[6].transform.position = snakepositions7.instance.deafultposition;
-                        snakepositions7.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions7.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions8.instance.i && !snakepositions8.instance.undestructable)
-                    {
-                        circle[7].transform.position = snakepositions8.instance.deafultposition;
-                        circle[7].GetComponent<snakepositions8>().i = 0;
-                        GameManager.instance.snakebutton[7].transform.position = snakepositions8.instance.deafultposition;
-                        snakepositions8.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions8.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions9.instance.i && !snakepositions9.instance.undestructable)
-                    {
-                        circle[8].transform.position = snakepositions9.instance.deafultposition;
-                        circle[8].GetComponent<snakepositions9>().i = 0;
-                        GameManager.instance.snakebutton[8].transform.position = snakepositions9.instance.deafultposition;
-                        snakepositions9.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions9.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions10.instance.i && !snakepositions10.instance.undestructable)
-                    {
-                        circle[9].transform.position = snakepositions10.instance.deafultposition;
-                        circle[9].GetComponent<snakepositions10>().i = 0;
-                        GameManager.instance.snakebutton[9].transform.position = snakepositions10.instance.deafultposition;
-                        snakepositions10.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions10.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions11.instance.i && !snakepositions11.instance.undestructable)
-                    {
-
-                        circle[10].transform.position = snakepositions11.instance.deafultposition;
-                        circle[10].GetComponent<snakepositions11>().i = 0;
-                        GameManager.instance.snakebutton[10].transform.position = snakepositions11.instance.deafultposition;
-                        snakepositions11.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions11.instance.boxcount = 0;
-                    }
-                    if (i == snakepositions12.instance.i && !snakepositions12.instance.undestructable)
-                    {
-                        circle[11].transform.position = snakepositions12.instance.deafultposition;
-                        circle[11].GetComponent<snakepositions12>().i = 0;
-                        GameManager.instance.snakebutton[11].transform.position = snakepositions12.instance.deafultposition;
-                        snakepositions12.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions12.instance.boxcount = 0;
-                    }
+                    circle[0].transform.position = snakepositions1.instance.deafultposition;
+                    circle[0].GetComponent<snakepositions1>().i = 0;
+                    GameManager.instance.snakebutton[0].transform.position = snakepositions1.instance.deafultposition;
+                    snakepositions1.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions1.instance.boxcount = 0;
                 }
-                if (i > 13 && i <= 59)
+                if (i == snakepositions2.instance.i && !snakepositions2.instance.undestructable)
                 {
-                    if (boxcount + snakepositions1.instance.boxcount == 48 && !snakepositions1.instance.undestructable)
-                    {
-                        circle[0].transform.position = snakepositions1.instance.deafultposition;
-                        circle[0].GetComponent<snakepositions1>().i = 0;
-                        GameManager.instance.snakebutton[0].transform.position = snakepositions1.instance.deafultposition;
-                        snakepositions1.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions1.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions2.instance.boxcount == 48 && !snakepositions2.instance.undestructable)
-                    {
-                        circle[1].transform.position = snakepositions2.instance.defaultposition;
-                        circle[1].GetComponent<snakepositions2>().i = 0;
-                        GameManager.instance.snakebutton[1].transform.position = snakepositions2.instance.defaultposition;
-                        snakepositions2.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions2.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions3.instance.boxcount == 48 && !snakepositions3.instance.undestructable)
-                    {
-                        circle[2].transform.position = snakepositions3.instance.deafultposition;
-                        circle[2].GetComponent<snakepositions3>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions3.instance.deafultposition;
-                        snakepositions4.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions3.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions4.instance.boxcount == 48 && !snakepositions4.instance.undestructable)
-                    {
-                        circle[3].transform.position = snakepositions4.instance.deafultposition;
-                        circle[3].GetComponent<snakepositions4>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions4.instance.deafultposition;
-                        snakepositions4.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions4.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions5.instance.boxcount == 48 && !snakepositions5.instance.undestructable)
-                    {
-                        circle[4].transform.position = snakepositions5.instance.deafultposition;
-                        circle[4].GetComponent<snakepositions5>().i = 0;
-                        GameManager.instance.snakebutton[4].transform.position = snakepositions5.instance.deafultposition;
-                        snakepositions5.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions5.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions6.instance.boxcount == 48 && !snakepositions6.instance.undestructable)
-                    {
-                        circle[5].transform.position = snakepositions6.instance.deafultposition;
-                        circle[5].GetComponent<snakepositions6>().i = 0;
-                        GameManager.instance.snakebutton[2].transform.position = snakepositions6.instance.deafultposition;
-                        snakepositions6.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions6.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions7.instance.boxcount == 48 && !snakepositions7.instance.undestructable)
-                    {
-                        circle[6].transform.position = snakepositions7.instance.deafultposition;
-                        circle[6].GetComponent<snakepositions7>().i = 0;
-                        GameManager.instance.snakebutton[6].transform.position = snakepositions7.instance.deafultposition;
-                        snakepositions7.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions7.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions8.instance.boxcount == 48 && !snakepositions8.instance.undestructable)
-                    {
-                        circle[7].transform.position = snakepositions8.instance.deafultposition;
-                        circle[7].GetComponent<snakepositions8>().i = 0;
-                        GameManager.instance.snakebutton[7].transform.position = snakepositions8.instance.deafultposition;
-                        snakepositions8.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions8.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions9.instance.boxcount == 48 && !snakepositions9.instance.undestructable)
-                    {
-                        circle[8].transform.position = snakepositions9.instance.deafultposition;
-                        circle[8].GetComponent<snakepositions9>().i = 0;
-                        GameManager.instance.snakebutton[8].transform.position = snakepositions9.instance.deafultposition;
-                        snakepositions9.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions9.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions10.instance.boxcount == 48 && !snakepositions10.instance.undestructable)
-                    {
-                        circle[9].transform.position = snakepositions10.instance.deafultposition;
-                        circle[9].GetComponent<snakepositions10>().i = 0;
-                        GameManager.instance.snakebutton[9].transform.position = snakepositions10.instance.deafultposition;
-                        snakepositions10.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions10.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions11.instance.boxcount == 48 && !snakepositions11.instance.undestructable)
-                    {
+                    circle[1].transform.position = snakepositions2.instance.defaultposition;
+                    circle[1].GetComponent<snakepositions2>().i = 0;
+                    GameManager.instance.snakebutton[1].transform.position = snakepositions2.instance.defaultposition;
+                    snakepositions2.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions2.instance.boxcount = 0;
+                }
+                if (i == snakepositions3.instance.i && !snakepositions3.instance.undestructable)
+                {
+                    circle[2].transform.position = snakepositions3.instance.deafultposition;
+                    circle[2].GetComponent<snakepositions3>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions3.instance.deafultposition;
+                    snakepositions4.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions3.instance.boxcount = 0;
+                }
+                if (i == snakepositions4.instance.i && !snakepositions4.instance.undestructable)
+                {
+                    circle[3].transform.position = snakepositions4.instance.deafultposition;
+                    circle[3].GetComponent<snakepositions4>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions4.instance.deafultposition;
+                    snakepositions4.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions4.instance.boxcount = 0;
+                }
+                if (i == snakepositions5.instance.i && !snakepositions5.instance.undestructable)
+                {
+                    circle[4].transform.position = snakepositions5.instance.deafultposition;
+                    circle[4].GetComponent<snakepositions5>().i = 0;
+                    GameManager.instance.snakebutton[4].transform.position = snakepositions5.instance.deafultposition;
+                    snakepositions5.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions5.instance.boxcount = 0;
+                }
+                if (i == snakepositions6.instance.i && !snakepositions6.instance.undestructable)
+                {
+                    circle[5].transform.position = snakepositions6.instance.deafultposition;
+                    circle[5].GetComponent<snakepositions6>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions6.instance.deafultposition;
+                    snakepositions6.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions6.instance.boxcount = 0;
+                }
+                if (i == snakepositions7.instance.i && !snakepositions7.instance.undestructable)
+                {
+                    circle[6].transform.position = snakepositions7.instance.deafultposition;
+                    circle[6].GetComponent<snakepositions7>().i = 0;
+                    GameManager.instance.snakebutton[6].transform.position = snakepositions7.instance.deafultposition;
+                    snakepositions7.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions7.instance.boxcount = 0;
+                }
+                if (i == snakepositions8.instance.i && !snakepositions8.instance.undestructable)
+                {
+                    circle[7].transform.position = snakepositions8.instance.deafultposition;
+                    circle[7].GetComponent<snakepositions8>().i = 0;
+                    GameManager.instance.snakebutton[7].transform.position = snakepositions8.instance.deafultposition;
+                    snakepositions8.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions8.instance.boxcount = 0;
+                }
+                if (i == snakepositions9.instance.i && !snakepositions9.instance.undestructable)
+                {
+                    circle[8].transform.position = snakepositions9.instance.deafultposition;
+                    circle[8].GetComponent<snakepositions9>().i = 0;
+                    GameManager.instance.snakebutton[8].transform.position = snakepositions9.instance.deafultposition;
+                    snakepositions9.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions9.instance.boxcount = 0;
+                }
+                if (i == snakepositions10.instance.i && !snakepositions10.instance.undestructable)
+                {
+                    circle[9].transform.position = snakepositions10.instance.deafultposition;
+                    circle[9].GetComponent<snakepositions10>().i = 0;
+                    GameManager.instance.snakebutton[9].transform.position = snakepositions10.instance.deafultposition;
+                    snakepositions10.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions10.instance.boxcount = 0;
+                }
+                if (i == snakepositions11.instance.i && !snakepositions11.instance.undestructable)
+                {
 
-                        circle[10].transform.position = snakepositions11.instance.deafultposition;
-                        circle[10].GetComponent<snakepositions11>().i = 0;
-                        GameManager.instance.snakebutton[10].transform.position = snakepositions11.instance.deafultposition;
-                        snakepositions11.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions11.instance.boxcount = 0;
-                    }
-                    if (boxcount + snakepositions12.instance.boxcount == 48 && !snakepositions12.instance.undestructable)
-                    {
-                        circle[11].transform.position = snakepositions12.instance.deafultposition;
-                        circle[11].GetComponent<snakepositions12>().i = 0;
-                        GameManager.instance.snakebutton[11].transform.position = snakepositions12.instance.deafultposition;
-                        snakepositions12.instance.snakeplayerstatus = false;
-                        number.instance.firstplayermove = false;
-                        snakepositions12.instance.boxcount = 0;
-                    }
+                    circle[10].transform.position = snakepositions11.instance.deafultposition;
+                    circle[10].GetComponent<snakepositions11>().i = 0;
+                    GameManager.instance.snakebutton[10].transform.position = snakepositions11.instance.deafultposition;
+                    snakepositions11.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions11.instance.boxcount = 0;
+                }
+                if (i == snakepositions12.instance.i && !snakepositions12.instance.undestructable)
+                {
+                    circle[11].transform.position = snakepositions12.instance.deafultposition;
+                    circle[11].GetComponent<snakepositions12>().i = 0;
+                    GameManager.instance.snakebutton[11].transform.position = snakepositions12.instance.deafultposition;
+                    snakepositions12.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions12.instance.boxcount = 0;
                 }
             }
+            if (i > 13 && i <= 59)
+            {
+                if (boxcount + snakepositions1.instance.boxcount == 48 && !snakepositions1.instance.undestructable)
+                {
+                    circle[0].transform.position = snakepositions1.instance.deafultposition;
+                    circle[0].GetComponent<snakepositions1>().i = 0;
+                    GameManager.instance.snakebutton[0].transform.position = snakepositions1.instance.deafultposition;
+                    snakepositions1.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions1.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions2.instance.boxcount == 48 && !snakepositions2.instance.undestructable)
+                {
+                    circle[1].transform.position = snakepositions2.instance.defaultposition;
+                    circle[1].GetComponent<snakepositions2>().i = 0;
+                    GameManager.instance.snakebutton[1].transform.position = snakepositions2.instance.defaultposition;
+                    snakepositions2.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions2.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions3.instance.boxcount == 48 && !snakepositions3.instance.undestructable)
+                {
+                    circle[2].transform.position = snakepositions3.instance.deafultposition;
+                    circle[2].GetComponent<snakepositions3>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions3.instance.deafultposition;
+                    snakepositions4.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions3.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions4.instance.boxcount == 48 && !snakepositions4.instance.undestructable)
+                {
+                    circle[3].transform.position = snakepositions4.instance.deafultposition;
+                    circle[3].GetComponent<snakepositions4>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions4.instance.deafultposition;
+                    snakepositions4.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions4.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions5.instance.boxcount == 48 && !snakepositions5.instance.undestructable)
+                {
+                    circle[4].transform.position = snakepositions5.instance.deafultposition;
+                    circle[4].GetComponent<snakepositions5>().i = 0;
+                    GameManager.instance.snakebutton[4].transform.position = snakepositions5.instance.deafultposition;
+                    snakepositions5.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions5.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions6.instance.boxcount == 48 && !snakepositions6.instance.undestructable)
+                {
+                    circle[5].transform.position = snakepositions6.instance.deafultposition;
+                    circle[5].GetComponent<snakepositions6>().i = 0;
+                    GameManager.instance.snakebutton[2].transform.position = snakepositions6.instance.deafultposition;
+                    snakepositions6.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions6.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions7.instance.boxcount == 48 && !snakepositions7.instance.undestructable)
+                {
+                    circle[6].transform.position = snakepositions7.instance.deafultposition;
+                    circle[6].GetComponent<snakepositions7>().i = 0;
+                    GameManager.instance.snakebutton[6].transform.position = snakepositions7.instance.deafultposition;
+                    snakepositions7.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions7.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions8.instance.boxcount == 48 && !snakepositions8.instance.undestructable)
+                {
+                    circle[7].transform.position = snakepositions8.instance.deafultposition;
+                    circle[7].GetComponent<snakepositions8>().i = 0;
+                    GameManager.instance.snakebutton[7].transform.position = snakepositions8.instance.deafultposition;
+                    snakepositions8.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions8.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions9.instance.boxcount == 48 && !snakepositions9.instance.undestructable)
+                {
+                    circle[8].transform.position = snakepositions9.instance.deafultposition;
+                    circle[8].GetComponent<snakepositions9>().i = 0;
+                    GameManager.instance.snakebutton[8].transform.position = snakepositions9.instance.deafultposition;
+                    snakepositions9.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions9.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions10.instance.boxcount == 48 && !snakepositions10.instance.undestructable)
+                {
+                    circle[9].transform.position = snakepositions10.instance.deafultposition;
+                    circle[9].GetComponent<snakepositions10>().i = 0;
+                    GameManager.instance.snakebutton[9].transform.position = snakepositions10.instance.deafultposition;
+                    snakepositions10.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions10.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions11.instance.boxcount == 48 && !snakepositions11.instance.undestructable)
+                {
 
+                    circle[10].transform.position = snakepositions11.instance.deafultposition;
+                    circle[10].GetComponent<snakepositions11>().i = 0;
+                    GameManager.instance.snakebutton[10].transform.position = snakepositions11.instance.deafultposition;
+                    snakepositions11.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions11.instance.boxcount = 0;
+                }
+                if (boxcount + snakepositions12.instance.boxcount == 48 && !snakepositions12.instance.undestructable)
+                {
+                    circle[11].transform.position = snakepositions12.instance.deafultposition;
+                    circle[11].GetComponent<snakepositions12>().i = 0;
+                    GameManager.instance.snakebutton[11].transform.position = snakepositions12.instance.deafultposition;
+                    snakepositions12.instance.snakeplayerstatus = false;
+                    number.instance.Lions_Lifeline = true;
+                    number.instance.Activate_Lifeline();
+                    snakepositions12.instance.boxcount = 0;
+                }
+            }
         }
-    
+
+    }
+
 
 
 }
