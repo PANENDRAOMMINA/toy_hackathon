@@ -70,6 +70,7 @@ public class lionposition2 : MonoBehaviour
             }
 
             check_Button_Number();
+            change_team_number();
         }
     }
     private  void check_Button_Number()
@@ -88,13 +89,17 @@ public class lionposition2 : MonoBehaviour
                 number.instance.squareoncharge = false;
                 number.instance.firstplayermove = true;
                 number.instance.squaremoveenabled = false;
-             
             }
 
 
             number.instance.moving = false;
             FindObjectOfType<button_creation>().Reset_positions();
         }
+    }
+    public void change_team_number()
+    {
+        if (FindObjectOfType<button_creation>().buttons.Count == 0)
+            number.instance.snakes_turn = true;
     }
     IEnumerator move(int steps, Button b)
     {

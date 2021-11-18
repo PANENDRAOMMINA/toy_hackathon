@@ -30,8 +30,8 @@ public class number : MonoBehaviour
         }
         lions_turn = true;
         snakes_turn = false;
-        team_number_for_lions = 0;
-        team_number_for_vipers = 0;
+        team_number_for_lions = -1;
+        team_number_for_vipers = -1;
     }
  
 
@@ -43,8 +43,9 @@ public class number : MonoBehaviour
         {
             dice.instance.dicerolling();
             dice2.instance.dicerolling();
-            StartCoroutine(display_lions_turn());
+            
             StartCoroutine(display_snakes_turn());
+            StartCoroutine(display_lions_turn());
         }
         if (Input.GetKeyDown(KeyCode.Space) && !moving&&!FindObjectOfType<menumanager>().ispaused)
         {
@@ -152,10 +153,10 @@ public class number : MonoBehaviour
         else
             Lions_taunt.SetActive(false);
 
-        if(team_number_for_lions>PlayerPrefs.GetInt("Team_Size"))
-            team_number_for_lions = -1;
-        if (team_number_for_vipers > PlayerPrefs.GetInt("Team_Size"))
-            team_number_for_vipers = -1;
+        if(team_number_for_lions == PlayerPrefs.GetInt("Team_Size"))
+            team_number_for_lions = 0;
+        if (team_number_for_vipers == PlayerPrefs.GetInt("Team_Size"))
+            team_number_for_vipers = 0;
         
 
         
@@ -175,10 +176,11 @@ public class number : MonoBehaviour
         if(lions_turn)
         {
             _lions_turns.SetActive(true);
-           
-            yield return new WaitForSecondsRealtime(1.5f);
-            _lions_turns.SetActive(false);
             lions_turn = false;
+            team_number_for_lions++;
+            yield return new WaitForSecondsRealtime(2f);
+            _lions_turns.SetActive(false);
+           
         }
       
     }
@@ -188,10 +190,11 @@ public class number : MonoBehaviour
         if (snakes_turn)
         {
             _snakes_turns.SetActive(true);
-           
-            yield return new WaitForSecondsRealtime(1.5f);
-            _snakes_turns.SetActive(false);
             snakes_turn = false;
+            team_number_for_vipers++;
+            yield return new WaitForSecondsRealtime(2f);
+            _snakes_turns.SetActive(false);
+            
         }
         
     }

@@ -62,6 +62,7 @@ public class lionpositions4 : MonoBehaviour
             }
 
             check_Button_Number();
+            change_team_number();
         }
     }
     private static void check_Button_Number()
@@ -89,7 +90,11 @@ public class lionpositions4 : MonoBehaviour
 
         }
     }
-
+    public void change_team_number()
+    {
+        if (FindObjectOfType<button_creation>().buttons.Count == 0)
+            number.instance.snakes_turn = true;
+    }
 
     IEnumerator move(int steps, Button b)
     {
